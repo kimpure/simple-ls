@@ -2,6 +2,13 @@ local fs = require("@lune/fs")
 local stdio = require("@lune/stdio")
 local process = require("@lune/process")
 
+local function print(...) 
+    local t = table.pack(...)
+    for i=1, t.n do
+        stdio.write(t[i] .. " ")
+    end
+end
+
 local args = process.args
 
 local a = table.find(args, "-a")
@@ -49,6 +56,13 @@ local function out(file: string, isH: any?)
         print(file)
         stdio.write(stdio.color "white")
     
+        return
+    end
+
+    if fs.isDir(file) then
+        stdio.write(stdio.color "cyan")
+        print(file)
+        stdio.write(stdio.color "white")
         return
     end
 
