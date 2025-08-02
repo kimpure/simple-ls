@@ -1,0 +1,1 @@
+lune build bin.luau
