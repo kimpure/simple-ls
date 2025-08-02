@@ -5,15 +5,41 @@ local process = require("@lune/process")
 local args = process.args
 
 local a = table.find(args, "-a")
-local file = args[#args]
+local s = table.find(args, "-s")
+
+local file 
 
 if a then
     if #args == a then
         file = "."
     end
-else
-    if #args == 0 then
+end
+
+if s then
+    if #args == a then
         file = "."
+    end
+end
+
+if #args == 0 then
+    file = "."
+end
+
+if file ~= "." then
+    file = ""
+
+    local n = #args
+
+    if s then
+        n -= 1
+    end
+
+    if a then
+        n -= 1
+    end
+
+    for i=1, n do
+        file ..= args[(#args - n) + i] .. " "
     end
 end
 
@@ -31,6 +57,7 @@ end
 
 local function ls(file: string)
     local h = process.exec("attrib", { process.cwd .. file }).stdout:match("H")
+    
     if a then
         out(file, h)
     else
@@ -47,6 +74,31 @@ if file == "." then
     for i=1, #dir do
         ls(dir[i])
     end
+elseif s then
+    local dir = fs.readDir "."
+    local files = string.split(file, " ")
+
+    for i=1, #dir do
+        for j=1, #files do
+            local t = string.match(dir[i], files[j])
+            if t and t ~= '' then
+                ls(dir[i])
+            end
+        end
+    end
 else
-    ls(file)
+    local files = string.split(file, " ")
+    for i=1, #files do
+        local file = files[i]
+
+        if file == '' then
+            continue
+        end
+        
+        if not fs.isFile(file) then
+            continue
+        end
+
+        ls(files[i])
+    end
 end
