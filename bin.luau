@@ -102,3 +102,7 @@ else
         ls(files[i])
     end
 end
+
+if process.cwd:match("\\") then
+    ls ".."
+end
